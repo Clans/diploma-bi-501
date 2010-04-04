@@ -21,13 +21,13 @@ import javax.xml.stream.events.XMLEvent;
  */
 public class XMLParser {
 
-    static final String NAME = "name";
-    static final String FILE = "file";
-    static final String SIZE = "size";
-    static final String MODIFIED = "modified";
-    static final String LASTSYNC = "lastsync";
+    private static final String FILE = "file";
+    private static final String NAME = "name";
+    private static final String SIZE = "size";
+    private static final String MODIFIED = "modified";
+    private static final String LASTSYNC = "lastsync";
+    public static Item item;
 
-    @SuppressWarnings({"unchecked", "null"})
     public List<Item> readConfig(File configFile) {
         List<Item> items = new ArrayList<Item>();
         try {
@@ -37,7 +37,8 @@ public class XMLParser {
             InputStream in = new FileInputStream(configFile);
             XMLEventReader eventReader = inputFactory.createXMLEventReader(in);
             // Read the XML document
-            Item item = null;
+            //Item item = null;
+            item = null;
 
             while (eventReader.hasNext()) {
                 XMLEvent event = eventReader.nextEvent();
@@ -45,40 +46,40 @@ public class XMLParser {
                 if (event.isStartElement()) {
                     StartElement startElement = event.asStartElement();
                     // If we have a item element we create a new item
-                    if (startElement.getName().getLocalPart() == (FILE)) {
+                    if (startElement.getName().getLocalPart().equals(FILE)) {
                         item = new Item();
                         // We read the attributes from this tag and add the date attribute to our object
                         Iterator<Attribute> attributes = startElement.getAttributes();
                         while (attributes.hasNext()) {
                             Attribute attribute = attributes.next();
                             if (attribute.getName().toString().equals(NAME));
-                            item.setDate(attribute.getValue());
+                            item.setName(attribute.getValue());
                         }
                     }
 
                     if (event.isStartElement()) {
                         if (event.asStartElement().getName().getLocalPart().equals(SIZE)) {
                             event = eventReader.nextEvent();
-                            item.setMode(event.asCharacters().getData());
+                            item.setSize(event.asCharacters().getData());
                             continue;
                         }
                     }
                     if (event.asStartElement().getName().getLocalPart().equals(MODIFIED)) {
                         event = eventReader.nextEvent();
-                        item.setUnit(event.asCharacters().getData());
+                        item.setModified(event.asCharacters().getData());
                         continue;
                     }
 
                     if (event.asStartElement().getName().getLocalPart().equals(LASTSYNC)) {
                         event = eventReader.nextEvent();
-                        item.setCurrent(event.asCharacters().getData());
+                        item.setLastsync(event.asCharacters().getData());
                         continue;
                     }
                 }
                 // If we reach the end of an item element we add it to the list
                 if (event.isEndElement()) {
                     EndElement endElement = event.asEndElement();
-                    if (endElement.getName().getLocalPart() == (FILE)) {
+                    if (endElement.getName().getLocalPart().equals(FILE)) {
                         items.add(item);
                     }
                 }
