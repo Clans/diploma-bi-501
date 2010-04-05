@@ -38,23 +38,55 @@ public class CompareManager {
         return hash;
     }
 
-    public static List compare() {
+    /**
+     *
+     * @return files to delete on server
+     */
+    public static List compareForDelete() {
         XMLParser read = new XMLParser();
         srvItems = read.readConfig(Client.srvFile);
         cliItems = read.readConfig(Client.cliFile);
 
         if (!srvItems.equals(cliItems)) {
-            List names = new ArrayList();
+            List deleteFiles = new ArrayList();
             for (int i = 0; i < srvItems.size(); i++) {
                 for (int j = 0; j < cliItems.size(); j++) {
                     if (srvItems.get(i).equals(cliItems.get(j))) {
-                        //System.out.println(cliItems.get(j).getName());
-                        names.add(cliItems.get(j).getName());
+                        srvItems.remove(cliItems.get(j));
                     }
                 }
             }
-            //System.out.println(names);
-            return names;
+            for (int m = 0; m < srvItems.size(); m++) {
+                deleteFiles.add(srvItems.get(m).getName());
+            }
+            return deleteFiles;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     *
+     * @return files to create on server
+     */
+    public static List compareForCreate() {
+        XMLParser read = new XMLParser();
+        srvItems = read.readConfig(Client.srvFile);
+        cliItems = read.readConfig(Client.cliFile);
+
+        if (!srvItems.equals(cliItems)) {
+            List createFiles = new ArrayList();
+            for (int i = 0; i < srvItems.size(); i++) {
+                for (int j = 0; j < cliItems.size(); j++) {
+                    if (srvItems.get(i).equals(cliItems.get(j))) {
+                        cliItems.remove(srvItems.get(i));
+                    }
+                }
+            }
+            for (int n = 0; n < cliItems.size(); n++) {
+                createFiles.add(cliItems.get(n).getName());
+            }
+            return createFiles;
         } else {
             return null;
         }
