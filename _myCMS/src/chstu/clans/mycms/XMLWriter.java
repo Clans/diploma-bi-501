@@ -2,6 +2,7 @@ package chstu.clans.mycms;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.xml.stream.XMLEventFactory;
@@ -20,32 +21,24 @@ import javax.xml.stream.events.XMLEvent;
  */
 public class XMLWriter {
 
-    /*private String configFile;
-
-    public void setFile(String configFile) {
-        this.configFile = configFile;
-    }*/
-
     public void saveConfig(File configFile, File dir) throws Exception {
         // Create a XMLOutputFactory
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
 
         // Create XMLEventWriter
-        XMLEventWriter eventWriter = outputFactory.createXMLEventWriter(new 
-                FileOutputStream(configFile));
+        XMLEventWriter eventWriter = outputFactory.createXMLEventWriter(new FileOutputStream(configFile));
 
         // Create a EventFactory
         XMLEventFactory eventFactory = XMLEventFactory.newInstance();
         XMLEvent end = eventFactory.createDTD("\n");
         XMLEvent tab = eventFactory.createDTD("\t");
-        
+
         // Create and write Start Tag
         StartDocument startDocument = eventFactory.createStartDocument();
         eventWriter.add(startDocument);
 
         SimpleDateFormat dateformatter = new SimpleDateFormat("yyyyMMdd HH:mm:ssZ");
-        //File dir = new File("d:\\Distrib\\!!!Saves!!!\\CCleaner");
-        String[] files = dir.list();
+        File[] fileList = dir.listFiles();
 
         // Create config open tag
         StartElement configStartElement = eventFactory.createStartElement("", "", "config");
@@ -53,23 +46,24 @@ public class XMLWriter {
         eventWriter.add(configStartElement);
         eventWriter.add(end);
 
-        for (int i = 0; i < files.length; i++) {
-            File f = new File(dir + File.separator + files[i]);
-            String size = Long.toString(f.length());
-            Date d = new Date(f.lastModified());
+        for (int i = 0; i < fileList.length; i++) {
+            String size = Long.toString(fileList[i].length());
+            Date d = new Date(fileList[i].lastModified());
+            Date sync = new Date();
             String modified = dateformatter.format(d.getTime());
+            String lastsync = dateformatter.format(sync.getTime());
 
             // Create file open tag
             StartElement filenameStartElement = eventFactory.createStartElement("", "", "file");
             eventWriter.add(tab);
             eventWriter.add(filenameStartElement);
-            eventWriter.add(eventFactory.createAttribute("name", f.getName()));
+            eventWriter.add(eventFactory.createAttribute("name", fileList[i].getName()));
             eventWriter.add(end);
 
             // Write the different nodes
             createNode(eventWriter, "size", size);
             createNode(eventWriter, "modified", modified);
-            createNode(eventWriter, "lastsync", "null");
+            createNode(eventWriter, "lastsync", lastsync);
 
             // Create file close root
             EndElement filenameEndElement = eventFactory.createEndElement("", "", "");
@@ -101,7 +95,7 @@ public class XMLWriter {
         // Create Content
         Characters characters = eventFactory.createCharacters(value);
         eventWriter.add(characters);
-        
+
         // Create End node
         EndElement eElement = eventFactory.createEndElement("", "", name);
         eventWriter.add(eElement);

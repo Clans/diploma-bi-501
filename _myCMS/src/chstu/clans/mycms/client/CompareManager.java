@@ -14,7 +14,6 @@ public class CompareManager {
     private List items;
     private static List<Item> srvItems;
     private static List<Item> cliItems;
-    //public static String[] filename;
 
     @Override
     public boolean equals(Object obj) {
@@ -44,25 +43,30 @@ public class CompareManager {
      */
     public static List compareForDelete() {
         XMLParser read = new XMLParser();
-        srvItems = read.readConfig(Client.srvFile);
-        cliItems = read.readConfig(Client.cliFile);
+        srvItems = read.readConfig(CliConfigFiles.srvFile);
+        cliItems = read.readConfig(CliConfigFiles.cliFile);
 
-        if (!srvItems.equals(cliItems)) {
-            List deleteFiles = new ArrayList();
-            for (int i = 0; i < srvItems.size(); i++) {
-                for (int j = 0; j < cliItems.size(); j++) {
-                    if (srvItems.get(i).equals(cliItems.get(j))) {
-                        srvItems.remove(cliItems.get(j));
+        srvItems.removeAll(cliItems);
+
+        for (int i = 0; i < srvItems.size(); i++) {
+            for (int j = 0; j < cliItems.size(); j++) {
+                try {
+                    if (!srvItems.get(i).getModified().equals(cliItems.get(j).getModified())
+                            && srvItems.get(i).getName().equals(cliItems.get(j).getName())
+                            && srvItems.get(i).getSize().equals(cliItems.get(j).getSize())
+                            && srvItems.get(i).getLastsync().equals(cliItems.get(i).getLastsync())) {
+                        srvItems.remove(srvItems.get(i));
                     }
+                } catch (IndexOutOfBoundsException ex) {
                 }
             }
-            for (int m = 0; m < srvItems.size(); m++) {
-                deleteFiles.add(srvItems.get(m).getName());
-            }
-            return deleteFiles;
-        } else {
-            return null;
         }
+
+        List deleteFiles = new ArrayList();
+        for (int m = 0; m < srvItems.size(); m++) {
+            deleteFiles.add(srvItems.get(m).getName());
+        }
+        return deleteFiles;
     }
 
     /**
@@ -71,24 +75,29 @@ public class CompareManager {
      */
     public static List compareForCreate() {
         XMLParser read = new XMLParser();
-        srvItems = read.readConfig(Client.srvFile);
-        cliItems = read.readConfig(Client.cliFile);
+        srvItems = read.readConfig(CliConfigFiles.srvFile);
+        cliItems = read.readConfig(CliConfigFiles.cliFile);
 
-        if (!srvItems.equals(cliItems)) {
-            List createFiles = new ArrayList();
-            for (int i = 0; i < srvItems.size(); i++) {
-                for (int j = 0; j < cliItems.size(); j++) {
-                    if (srvItems.get(i).equals(cliItems.get(j))) {
-                        cliItems.remove(srvItems.get(i));
+        cliItems.removeAll(srvItems);
+
+        for (int i = 0; i < cliItems.size(); i++) {
+            for (int j = 0; j < srvItems.size(); j++) {
+                try {
+                    if (!cliItems.get(i).getModified().equals(srvItems.get(j).getModified())
+                            && cliItems.get(i).getName().equals(srvItems.get(j).getName())
+                            && cliItems.get(i).getSize().equals(srvItems.get(j).getSize())
+                            && cliItems.get(i).getLastsync().equals(srvItems.get(j).getLastsync())) {
+                        cliItems.remove(cliItems.get(i));
                     }
+                } catch (IndexOutOfBoundsException ex) {
                 }
             }
-            for (int n = 0; n < cliItems.size(); n++) {
-                createFiles.add(cliItems.get(n).getName());
-            }
-            return createFiles;
-        } else {
-            return null;
         }
+        List createFiles = new ArrayList();
+        for (int n = 0; n < cliItems.size(); n++) {
+            createFiles.add(cliItems.get(n).getName());
+            //createFiles.add(cliItems.get(n).getSize());
+        }
+        return createFiles;
     }
 }

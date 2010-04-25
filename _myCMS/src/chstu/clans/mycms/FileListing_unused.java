@@ -10,7 +10,7 @@ import java.io.*;
 * @author Alex Wong
 * @author anonymous user
 */
-public final class FileListing {
+public final class FileListing_unused {
 
   /**
   * Demonstrate use.
@@ -20,7 +20,7 @@ public final class FileListing {
   */
   public static void main(String... aArgs) throws FileNotFoundException {
     File startingDirectory= new File("d:\\x_Download");
-    List<File> files = FileListing.getFileListing(startingDirectory);
+    List<File> files = FileListing_unused.getFileListing(startingDirectory);
 
     //print out all file names, in the the order of File.compareTo()
     for(File file : files ){

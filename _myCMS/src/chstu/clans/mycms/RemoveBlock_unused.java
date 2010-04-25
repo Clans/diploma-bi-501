@@ -13,7 +13,7 @@ import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-public class RemoveBlock {
+public class RemoveBlock_unused {
 
   static public void main(String[] arg) {
     try{

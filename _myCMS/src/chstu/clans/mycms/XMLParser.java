@@ -37,7 +37,6 @@ public class XMLParser {
             InputStream in = new FileInputStream(configFile);
             XMLEventReader eventReader = inputFactory.createXMLEventReader(in);
             // Read the XML document
-            //Item item = null;
             item = null;
 
             while (eventReader.hasNext()) {
